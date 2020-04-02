@@ -40,5 +40,26 @@ namespace WebMVC.Controllers
             //return RedirectToAction("Index"); esta é uma possibilidade de retornar a ação
             return RedirectToAction(nameof(Index)); //melhor alternativa para redirecionar para a ação Index, pois melhora a manutenção do sistema
         }
+
+        public IActionResult Delete (int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var obj = _sellerService.FindById(id.Value); //por ser opcional, precisa do .Value
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            return View(obj);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete (int id)
+        {
+            _sellerService.Remove(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
