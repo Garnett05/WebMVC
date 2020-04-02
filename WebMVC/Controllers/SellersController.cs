@@ -29,7 +29,7 @@ namespace WebMVC.Controllers
         }
 
         public IActionResult Create()
-        {
+        {            
             var departments = _departmentService.FindAll();
             var viewModel = new SellerFormViewModel { Departments = departments };
             return View(viewModel);
@@ -38,6 +38,12 @@ namespace WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Seller seller)
         {
+            if (!ModelState.IsValid)
+            {
+                var departments = _departmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+            }
             _sellerService.Insert(seller);
             //return RedirectToAction("Index"); esta é uma possibilidade de retornar a ação
             return RedirectToAction(nameof(Index)); //melhor alternativa para redirecionar para a ação Index, pois melhora a manutenção do sistema
@@ -96,7 +102,13 @@ namespace WebMVC.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Seller seller)
-        {   
+        {
+            if (!ModelState.IsValid)
+            {
+                var departments = _departmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+            }
             if (id != seller.Id)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
